@@ -25,10 +25,12 @@ def read_file(filepath: str):
                 params = tuple(map(int, line.split(' ')))
                 libraries.append(np.array(params, dtype=np.uintc))
                 i += 1
+                if i == L:
+                    break
             is_odd = not is_odd
 
     del params
     del is_odd
     del i
 
-    return n, t, m, libraries, s
+    return n, t, m, libraries, s, D

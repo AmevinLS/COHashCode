@@ -1,0 +1,61 @@
+         3459 function calls (3275 primitive calls) in 0.006 seconds
+
+   Ordered by: cumulative time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.006    0.006 d:/Documents/University/Semester3/Combinatorial_Optimization/COHashCode/branchnbound.py:161(branch_and_bound_solve)
+       23    0.003    0.000    0.003    0.000 {built-in method builtins.print}
+       16    0.001    0.000    0.002    0.000 d:/Documents/University/Semester3/Combinatorial_Optimization/COHashCode/branchnbound.py:34(get_children)
+   212/28    0.000    0.000    0.001    0.000 C:\programs\x64\conda\envs\niki_test\lib\copy.py:132(deepcopy)
+       28    0.000    0.000    0.001    0.000 C:\programs\x64\conda\envs\niki_test\lib\copy.py:237(_deepcopy_dict)
+       46    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\copy.py:269(_reconstruct)
+       92    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\copy.py:274(<genexpr>)
+       46    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\copy.py:211(_deepcopy_list)
+       19    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\queue.py:153(get)
+       16    0.000    0.000    0.000    0.000 {method 'sum' of 'numpy.ndarray' objects}
+       16    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\core\_methods.py:36(_sum)
+       16    0.000    0.000    0.000    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+       26    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\queue.py:121(put)
+      166    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\copy.py:253(_keep_alive)
+       45    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\threading.py:335(notify)
+        4    0.000    0.000    0.000    0.000 d:/Documents/University/Semester3/Combinatorial_Optimization/COHashCode/branchnbound.py:96(objective_func)
+       26    0.000    0.000    0.000    0.000 d:/Documents/University/Semester3/Combinatorial_Optimization/COHashCode/branchnbound.py:28(get_scanned_books)
+       26    0.000    0.000    0.000    0.000 d:/Documents/University/Semester3/Combinatorial_Optimization/COHashCode/branchnbound.py:11(__init__)
+       46    0.000    0.000    0.000    0.000 {method '__deepcopy__' of 'numpy.generic' objects}
+       46    0.000    0.000    0.000    0.000 {method '__reduce_ex__' of 'object' objects}
+      470    0.000    0.000    0.000    0.000 {method 'get' of 'dict' objects}
+       20    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\queue.py:96(empty)
+      526    0.000    0.000    0.000    0.000 {built-in method builtins.id}
+       45    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\threading.py:240(__enter__)
+       45    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\threading.py:255(_is_owned)
+       88    0.000    0.000    0.000    0.000 {method 'update' of 'set' objects}
+       24    0.000    0.000    0.000    0.000 d:/Documents/University/Semester3/Combinatorial_Optimization/COHashCode/branchnbound.py:107(upper_bound_func)
+        1    0.000    0.000    0.000    0.000 d:/Documents/University/Semester3/Combinatorial_Optimization/COHashCode/branchnbound.py:88(populate_stack_with_candidates)
+       39    0.000    0.000    0.000    0.000 {method 'difference' of 'set' objects}
+       39    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\queue.py:245(_qsize)
+       45    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\threading.py:243(__exit__)
+      138    0.000    0.000    0.000    0.000 {built-in method builtins.getattr}
+      194    0.000    0.000    0.000    0.000 {built-in method builtins.isinstance}
+      234    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+       19    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\queue.py:251(_get)
+      120    0.000    0.000    0.000    0.000 {built-in method builtins.len}
+        1    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\queue.py:33(__init__)
+       45    0.000    0.000    0.000    0.000 {method 'acquire' of '_thread.lock' objects}
+       45    0.000    0.000    0.000    0.000 {method '__enter__' of '_thread.lock' objects}
+       92    0.000    0.000    0.000    0.000 {built-in method builtins.issubclass}
+       26    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\queue.py:248(_put)
+       19    0.000    0.000    0.000    0.000 {method 'pop' of 'list' objects}
+       19    0.000    0.000    0.000    0.000 d:/Documents/University/Semester3/Combinatorial_Optimization/COHashCode/branchnbound.py:93(is_single_candidate)
+       46    0.000    0.000    0.000    0.000 {method 'values' of 'dict' objects}
+        3    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\threading.py:216(__init__)
+       54    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}
+       45    0.000    0.000    0.000    0.000 {method '__exit__' of '_thread.lock' objects}
+       46    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\copy.py:190(_deepcopy_atomic)
+       24    0.000    0.000    0.000    0.000 {method 'add' of 'set' objects}
+       24    0.000    0.000    0.000    0.000 {method 'keys' of 'dict' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method _thread.allocate_lock}
+        4    0.000    0.000    0.000    0.000 {method 'update' of 'dict' objects}
+        1    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\queue.py:242(_init)
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
