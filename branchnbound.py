@@ -1,10 +1,28 @@
 # flake8: noqa
-from queue import LifoQueue
+from queue import LifoQueue, PriorityQueue
 from reader import read_file
 from typing import Dict, List
 from itertools import combinations, product
 from copy import deepcopy
 import numpy as np
+
+import cProfile
+import pstats
+
+def profiletime(func):
+    def wrapper(*args, **kwargs):
+        profiler = cProfile.Profile()
+        profiler.enable()
+        result = func(*args, **kwargs)
+        profiler.disable()
+        stream = open("test.txt", "w")
+        stats = pstats.Stats(profiler, stream=stream)
+        stats.sort_stats("cumtime")
+        stats.print_stats()
+        
+        return result
+    
+    return wrapper
 
 
 class CandidateSolutionNode:
@@ -81,9 +99,12 @@ class CandidateSolutionNode:
 class LibraryProblem:
     def __init__(self, filepath: str):
         n, t, m, libs, s, d = read_file(filepath)
-        self.num_books, self.signup_times = n, t
+        _, self.signup_times = n, t
         self.scan_speeds, self.libraries, self.scores = m, libs, s
         self.num_days = d
+        self.books_ordered = (-self.scores).argsort()
+        self.num_libs = len(self.libraries)
+        self.num_books = len(self.scores)
 
     def populate_stack_with_candidates(self, stack: LifoQueue):
         for lib in range(len(self.libraries)):
@@ -106,8 +127,9 @@ class LibraryProblem:
 
     def upper_bound_func(self, node: CandidateSolutionNode) -> int:
         # POSSIBLY COME UP WITH BETTER UPPER BOUND FUNCTION
+        # return float("inf")
+        print("Started upper_bound_func")
         res = 0
-        return float("inf")
         days_left = self.num_days - node.num_days
         for lib in node.lib_order:
             scans_left = days_left * self.scan_speeds[lib]
@@ -123,20 +145,19 @@ class LibraryProblem:
         temp_days_left = days_left
         while temp_days_left > 0:
             best_lib, best_score = self._get_best_lib_greedy(
-                node.lib_order, node.get_scanned_books(), temp_days_left
+                set(node.lib_order), node.get_scanned_books(), temp_days_left
             )
             if best_lib is None:
                 break
             res += best_score
             temp_days_left -= self.signup_times[best_lib]
-
+        print("Finished upper_bound_func")
         return res
 
     def _get_books_sorted_by_score(self, books):
-        res = sorted(
-            books, key=lambda x: self.scores[x], reverse=True
-        )
-        return np.array(res)
+        # SOMETHING'S REALLY WRONG HERE
+        res = (-self.scores[list(books)]).argsort()
+        return res
     
     def _get_best_lib_greedy(self, signed_libs, scanned_books: set, days_left: int):
         best_lib = None
@@ -156,7 +177,6 @@ class LibraryProblem:
                 best_lib = curr_lib
                 best_score = curr_score
         return best_lib, best_score
-
 
 def branch_and_bound_solve(problem: LibraryProblem):
     problem_lower_bound = float("-inf")
@@ -185,29 +205,127 @@ def branch_and_bound_solve(problem: LibraryProblem):
     return current_optimum
 
 
-FILE = "resources/a_example.txt"
-problem = LibraryProblem(FILE)
-# node = CandidateSolutionNode(7, [1, 0], {0: [0, 1, 2, 3], 1: [5, 2, 3]})
+class GreedyProblem(LibraryProblem):
+    def __init__(self, filepath: str):
+        super().__init__(filepath)
+        self.orig_scores = deepcopy(self.scores)
+        self.lib_evals = np.zeros(self.num_libs)
+        self.scanned_books = set()
+        self.added_libs = set()
+    
+    def evaluate_lib(self, lib, days_left: int):
+        scans_left = (days_left - self.signup_times[lib]) * self.scan_speeds[lib]
+        books_left = set(self.libraries[lib]) - self.scanned_books
+        books_sorted = np.array(
+            sorted(books_left, key=lambda book: self.scores[book])
+        )
+        chosen_books = books_sorted[:scans_left]
 
-# testnode = CandidateSolutionNode(6, [1, 0], {0: {0, 1}, 1: {5, 2, 3}})
-# print(testnode)
-# print("="*20)
-# print(*testnode.get_children(problem), sep="\n")
-# print(problem.upper_bound_func(testnode))
+        if len(chosen_books) == 0:
+            return 0, chosen_books
 
-import cProfile, pstats
+        lib_eval = self.scores[chosen_books].sum() / self.signup_times[lib]
+        return lib_eval, chosen_books
 
-profiler = cProfile.Profile()
-profiler.enable()
-optim_sol = branch_and_bound_solve(problem)
-profiler.disable()
+    def select_lib(self) -> int:
+        best_lib = self.lib_evals.argmax()
+        return best_lib
 
-stream = open("test.txt", "w")
-stats = pstats.Stats(profiler, stream=stream)
-stats.sort_stats("cumtime")
-stats.print_stats()
+    def _update_lib_evals(self, days_left: int):
+        for lib in range(self.num_libs):
+            if lib in self.added_libs:
+                self.lib_evals[lib] = 0
+            else:
+                self.lib_evals[lib], _ = self.evaluate_lib(lib, days_left)
+
+    def remove_books(self, books):
+        self.scores[books] = 0
+
+    def greedy(self):
+        TOTAL_SCORE = 0
+        
+        days_left = self.num_days
+        lib_order = []
+        lib_books_scanned = dict()
+        libs_left = set(range(self.num_libs))
+        while days_left > 0:
+            if len(libs_left) == 0:
+                break
+            
+            self._update_lib_evals(days_left)
+            best_lib = self.select_lib()
+            if self.lib_evals[best_lib] == 0:
+                break
+            _, chosen_books = self.evaluate_lib(best_lib, days_left)
+            lib_order.append(best_lib)
+            lib_books_scanned[best_lib] = chosen_books
+            TOTAL_SCORE += self.orig_scores[chosen_books].sum()
+            # self.remove_books(chosen_books)
+            self.scanned_books.update(chosen_books)
+            self.added_libs.add(best_lib)
+
+            days_left -= self.signup_times[best_lib]
+        
+        return TOTAL_SCORE, lib_order, lib_books_scanned
+        
+
+def bad_greedy(problem: LibraryProblem):
+    TOTAL_SCORE = 0
+
+    book_counts = np.zeros(problem.num_books)
+    for books in problem.libraries:
+        for book in books:
+            book_counts[book] += 1
+    
+    adj_book_scores = problem.scores # / book_counts
+    lib_scores = np.zeros(problem.num_libs)
+    for lib in range(problem.num_libs):
+        lib_scores[lib] = adj_book_scores[problem.libraries[lib]].sum() / problem.signup_times[lib]
+    lib_order = (-lib_scores).argsort()
+
+    book_queues = []
+    for lib in range(problem.num_libs):
+        pq = PriorityQueue()
+        for book in problem.libraries[lib]:
+            pq.put((-adj_book_scores[book], book))
+        book_queues.append(pq)
+
+    scanned_status = {book: False for book in range(problem.num_books)}
+    lib_is_scanning = np.full(problem.num_libs, False)
+    curr_signup_ind = 0
+    next_signup_day = problem.signup_times[lib_order[curr_signup_ind]]
+    for day in range(problem.num_days):
+        if day == next_signup_day:
+            lib_is_scanning[curr_signup_ind] = True
+        for lib in np.where(lib_is_scanning)[0]:
+            books_to_scan = []
+            while len(books_to_scan) < problem.scan_speeds[lib]:
+                if book_queues[lib].empty():
+                    lib_is_scanning[lib] = False
+                    break
+                _, book = book_queues[lib].get()
+                if not scanned_status[book]:
+                    books_to_scan.append(book)
+            for book in books_to_scan:
+                scanned_status[book] = True
+                TOTAL_SCORE += problem.scores[book]
+
+    return TOTAL_SCORE
+
+            
+FILE = "resources/c_incunabula.txt"
+
+# problem = LibraryProblem(FILE)
+# result = bad_greedy(problem)
+# print(f"Score: {result}")
+
+problem = GreedyProblem(FILE)
+result, lib_order, lib_books_scanned = problem.greedy()
+print(f"Score: {result}")
+# print(f"LibOrder: {lib_order}")
+# print(f"BooksScanned: {lib_books_scanned}")
 
 # optim_sol = branch_and_bound_solve(problem)
-print("\n\nSOLUTION:")
-print(optim_sol)
-print(f"Score: {problem.objective_func(optim_sol)}")
+# print("\n\nSOLUTION:")
+# print(optim_sol)
+# print(f"Score: {problem.objective_func(optim_sol)}")
