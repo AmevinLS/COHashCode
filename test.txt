@@ -1,23 +1,43 @@
-         578764 function calls in 15.512 seconds
+         952 function calls in 0.633 seconds
 
    Ordered by: cumulative time
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        1    0.005    0.005   15.512   15.512 d:/Documents/University/Semester3/Combinatorial_Optimization/COHashCode/branchnbound.py:126(upper_bound_func)
-      986    7.522    0.008   15.504    0.016 d:/Documents/University/Semester3/Combinatorial_Optimization/COHashCode/branchnbound.py:160(_get_best_lib_greedy)
-    95472    6.779    0.000    7.260    0.000 d:/Documents/University/Semester3/Combinatorial_Optimization/COHashCode/branchnbound.py:156(_get_books_sorted_by_score)
-    95472    0.481    0.000    0.481    0.000 {method 'argsort' of 'numpy.ndarray' objects}
-    95474    0.052    0.000    0.392    0.000 {method 'sum' of 'numpy.ndarray' objects}
-    95474    0.025    0.000    0.340    0.000 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\core\_methods.py:36(_sum)
-    95474    0.329    0.000    0.329    0.000 {method 'difference' of 'set' objects}
-    95474    0.316    0.000    0.316    0.000 {method 'reduce' of 'numpy.ufunc' objects}
-      986    0.002    0.000    0.002    0.000 d:/Documents/University/Semester3/Combinatorial_Optimization/COHashCode/branchnbound.py:46(get_scanned_books)
-        2    0.001    0.000    0.001    0.000 {built-in method builtins.print}
-     1972    0.000    0.000    0.000    0.000 {method 'update' of 'set' objects}
-      986    0.000    0.000    0.000    0.000 {method 'values' of 'dict' objects}
-      986    0.000    0.000    0.000    0.000 {built-in method builtins.len}
-        2    0.000    0.000    0.000    0.000 {method 'sort' of 'numpy.ndarray' objects}
-        2    0.000    0.000    0.000    0.000 {built-in method numpy.array}
+        1    0.015    0.015    0.633    0.633 d:/Documents/University/Semester3/Combinatorial_Optimization/COHashCode/branchnbound.py:264(greedy)
+       19    0.225    0.012    0.616    0.032 d:/Documents/University/Semester3/Combinatorial_Optimization/COHashCode/branchnbound.py:245(_update_lib_evals)
+       57    0.000    0.000    0.369    0.006 {built-in method numpy.core._multiarray_umath.implement_array_function}
+       19    0.000    0.000    0.355    0.019 <__array_function__ internals>:2(sort)
+       19    0.000    0.000    0.355    0.019 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\core\fromnumeric.py:837(sort)
+       19    0.309    0.016    0.309    0.016 {method 'sort' of 'numpy.ndarray' objects}
+       19    0.045    0.002    0.045    0.002 {method 'copy' of 'numpy.ndarray' objects}
+       57    0.000    0.000    0.022    0.000 {method 'sum' of 'numpy.ndarray' objects}
+       76    0.021    0.000    0.021    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+       57    0.000    0.000    0.021    0.000 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\core\_methods.py:36(_sum)
+       19    0.000    0.000    0.015    0.001 <__array_function__ internals>:2(tile)
+       19    0.000    0.000    0.014    0.001 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\lib\shape_base.py:1169(tile)
+       19    0.014    0.001    0.014    0.001 {method 'repeat' of 'numpy.ndarray' objects}
+       19    0.001    0.000    0.001    0.000 d:/Documents/University/Semester3/Combinatorial_Optimization/COHashCode/branchnbound.py:226(evaluate_lib)
+       19    0.001    0.000    0.001    0.000 {method 'argsort' of 'numpy.ndarray' objects}
+       19    0.000    0.000    0.000    0.000 <__array_function__ internals>:2(all)
+       19    0.000    0.000    0.000    0.000 {built-in method numpy.arange}
+       19    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\core\fromnumeric.py:2324(all)
+       19    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\core\fromnumeric.py:73(_wrapreduction)
+       19    0.000    0.000    0.000    0.000 d:/Documents/University/Semester3/Combinatorial_Optimization/COHashCode/branchnbound.py:257(select_lib)
+       76    0.000    0.000    0.000    0.000 {method 'reshape' of 'numpy.ndarray' objects}
+       19    0.000    0.000    0.000    0.000 {method 'argmax' of 'numpy.ndarray' objects}
+       38    0.000    0.000    0.000    0.000 {built-in method numpy.array}
+       19    0.000    0.000    0.000    0.000 d:/Documents/University/Semester3/Combinatorial_Optimization/COHashCode/branchnbound.py:261(remove_books)
+       19    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\core\_asarray.py:88(asanyarray)
+       19    0.000    0.000    0.000    0.000 {built-in method builtins.all}
+       19    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\core\fromnumeric.py:74(<dictcomp>)
+       38    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\lib\shape_base.py:1251(<genexpr>)
+       38    0.000    0.000    0.000    0.000 {built-in method builtins.len}
+       38    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\lib\shape_base.py:1241(<genexpr>)
+       19    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\core\fromnumeric.py:833(_sort_dispatcher)
+       19    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}
+       19    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\lib\shape_base.py:1165(_tile_dispatcher)
+       19    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+       19    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\core\fromnumeric.py:2320(_all_dispatcher)
         1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
 
 

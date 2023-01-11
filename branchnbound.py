@@ -209,47 +209,67 @@ class GreedyProblem(LibraryProblem):
     def __init__(self, filepath: str):
         super().__init__(filepath)
         self.orig_scores = deepcopy(self.scores)
+
         self.lib_evals = np.zeros(self.num_libs)
-        self.scanned_books = set()
-        self.added_libs = set()
+        
+        self.null_book = len(self.scores)
+        self.scores = np.append(self.scores, 0)
+        
+        max_libsize = max([library.size for library in self.libraries])
+        for i in range(self.num_libs):
+            self.libraries[i] = np.append(self.libraries[i], np.full(max_libsize - self.libraries[i].size, self.null_book))
+        self.libraries = np.array(self.libraries)
+        
+        self.libs_used = np.full(self.num_libs, False)
+            
     
     def evaluate_lib(self, lib, days_left: int):
         scans_left = (days_left - self.signup_times[lib]) * self.scan_speeds[lib]
-        books_left = set(self.libraries[lib]) - self.scanned_books
-        books_sorted = np.array(
-            sorted(books_left, key=lambda book: self.scores[book])
-        )
+        
+        # books_left = set(self.libraries[lib]) - self.scanned_books
+        # books_sorted = np.array(
+        #     sorted(books_left, key=lambda book: self.scores[book])
+        # )
+        # chosen_books = books_sorted[:scans_left]
+
+        inds = (-self.scores[self.libraries[lib]]).argsort()
+        books_sorted = self.libraries[lib][inds]
         chosen_books = books_sorted[:scans_left]
 
         if len(chosen_books) == 0:
             return 0, chosen_books
 
         lib_eval = self.scores[chosen_books].sum() / self.signup_times[lib]
-        return lib_eval, chosen_books
+        return lib_eval, chosen_books[chosen_books != self.null_book]
+
+    def _update_lib_evals(self, days_left: int):
+        scans_left = (days_left - self.signup_times) * self.scan_speeds
+        libs_books_scores = self.scores[self.libraries]
+        libs_books_scores = -np.sort(-libs_books_scores, axis=1)
+        
+        _inds = np.arange(libs_books_scores.shape[1])
+        _inds = np.tile(_inds, libs_books_scores.shape[0]).reshape((-1, _inds.size))
+        mask = _inds < scans_left.reshape((scans_left.size, 1))
+        self.lib_evals = libs_books_scores.sum(axis=1, where=mask) / (self.signup_times)**2
+
+        self.lib_evals[self.libs_used] = 0
 
     def select_lib(self) -> int:
         best_lib = self.lib_evals.argmax()
         return best_lib
 
-    def _update_lib_evals(self, days_left: int):
-        for lib in range(self.num_libs):
-            if lib in self.added_libs:
-                self.lib_evals[lib] = 0
-            else:
-                self.lib_evals[lib], _ = self.evaluate_lib(lib, days_left)
-
     def remove_books(self, books):
         self.scores[books] = 0
 
+    @profiletime
     def greedy(self):
         TOTAL_SCORE = 0
         
         days_left = self.num_days
         lib_order = []
         lib_books_scanned = dict()
-        libs_left = set(range(self.num_libs))
         while days_left > 0:
-            if len(libs_left) == 0:
+            if np.all(self.libs_used):
                 break
             
             self._update_lib_evals(days_left)
@@ -259,10 +279,9 @@ class GreedyProblem(LibraryProblem):
             _, chosen_books = self.evaluate_lib(best_lib, days_left)
             lib_order.append(best_lib)
             lib_books_scanned[best_lib] = chosen_books
-            TOTAL_SCORE += self.orig_scores[chosen_books].sum()
-            # self.remove_books(chosen_books)
-            self.scanned_books.update(chosen_books)
-            self.added_libs.add(best_lib)
+            TOTAL_SCORE += self.scores[chosen_books].sum()
+            self.libs_used[best_lib] = True
+            self.remove_books(chosen_books)
 
             days_left -= self.signup_times[best_lib]
         
@@ -313,15 +332,18 @@ def bad_greedy(problem: LibraryProblem):
     return TOTAL_SCORE
 
             
-FILE = "resources/c_incunabula.txt"
+FILE = "resources/d_tough_choices.txt"
 
 # problem = LibraryProblem(FILE)
 # result = bad_greedy(problem)
 # print(f"Score: {result}")
 
-problem = GreedyProblem(FILE)
-result, lib_order, lib_books_scanned = problem.greedy()
-print(f"Score: {result}")
+# problem = GreedyProblem(FILE)
+# print(problem.libraries)
+# problem._update_lib_evals_vec(7)
+# print(problem.lib_evals)
+# result, lib_order, lib_books_scanned = problem.greedy()
+# print(f"Score: {result}")
 # print(f"LibOrder: {lib_order}")
 # print(f"BooksScanned: {lib_books_scanned}")
 
@@ -329,3 +351,18 @@ print(f"Score: {result}")
 # print("\n\nSOLUTION:")
 # print(optim_sol)
 # print(f"Score: {problem.objective_func(optim_sol)}")
+
+TOTAL_SUM = 0
+
+files = [
+    "a_example", "b_read_on", "c_incunabula", 
+    "d_tough_choices", "e_so_many_books", "f_libraries_of_the_world"
+]
+for file in files:
+    path = f"resources/{file}.txt"
+    problem = GreedyProblem(path)
+    result, lib_order, lib_books_scanned = problem.greedy()
+    print(f"File: {file}, Result: {result}")
+    TOTAL_SUM += result
+
+print(f"TOTAL_SUM: {TOTAL_SUM}")
