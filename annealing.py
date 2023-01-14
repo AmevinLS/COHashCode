@@ -105,7 +105,6 @@ class AnnealingProblem(NumpyLibraryProblem):
 
         scans_left = self.num_days - signupcumsum
         book_available = np.full(self.num_books, True)
-        days_left = self.num_days
         for i in range(len(lib_order)):
             if scans_left[i] <= 0:
                 break
@@ -130,8 +129,6 @@ class AnnealingProblem(NumpyLibraryProblem):
             book_available[books_chosen] = False
             res_score += self.scores[books_chosen].sum()
 
-            days_left -= self.signup_times[lib]
-        
         return res_score
             
 
