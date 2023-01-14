@@ -1,11 +1,12 @@
 # flake8: noqa
 
-import numpy as np
-from copy import deepcopy
-
-from reader import read_file
 import cProfile
 import pstats
+from copy import deepcopy
+
+import numpy as np
+
+from reader import read_file
 
 
 def profiletime(func):
@@ -21,7 +22,7 @@ def profiletime(func):
         stream.close()
 
         return result
-    
+
     return wrapper
 
 
@@ -33,21 +34,21 @@ class LibraryProblem:
         n, t, m, libs, s, d = read_file(filepath)
         _, self.signup_times = n, t
         self.scan_speeds, self.libraries, self.scores = m, libs, s
-        self.num_days = d
+        self.NUM_DAYS = d
         self.books_ordered = (-self.scores).argsort()
-        self.num_libs = len(self.libraries)
-        self.num_books = len(self.scores)
+        self.NUM_LIBS = len(self.libraries)
+        self.NUM_BOOKS = len(self.scores)
 
     def score_solution(self, lib_order, assignment: dict):
         if len(lib_order) != len(set(lib_order)):
             raise BadSolutionException("Trying to signup a library more than once")
 
-        if (self.signup_times[lib_order].sum() > self.num_days):
+        if (self.signup_times[lib_order].sum() > self.NUM_DAYS):
             raise BadSolutionException(
-                f"Signup times ({self.signup_times[lib_order].sum()}) greater than num_days ({self.num_days})"
+                f"Signup times ({self.signup_times[lib_order].sum()}) greater than num_days ({self.NUM_DAYS})"
             )
 
-        days_left = self.num_days
+        days_left = self.NUM_DAYS
         books_scanned = set()
         for lib in lib_order:
             books = assignment[lib]
@@ -71,9 +72,9 @@ class NumpyLibraryProblem(LibraryProblem):
         self.scores_np = np.append(self.scores, 0)
         self.scores_np = self.scores_np.astype(np.int32)
         self.signup_times = np.array(self.signup_times, dtype=np.int32)
-        
+
         self.libraries_np = deepcopy(self.libraries)
         max_libsize = max([library.size for library in self.libraries_np])
-        for i in range(self.num_libs):
+        for i in range(self.NUM_LIBS):
             self.libraries_np[i] = np.append(self.libraries_np[i], np.full(max_libsize - self.libraries_np[i].size, self.null_book))
         self.libraries_np = np.array(self.libraries_np)

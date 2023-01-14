@@ -13,15 +13,16 @@ class AnnealingProblem(NumpyLibraryProblem):
         self.lib_sums = self.scores_np[self.libraries_np].sum(axis=1).reshape((-1,))
 
     def random_lib_order(self):
-        lib_order = np.arange(0, self.num_libs)
-        np.random.shuffle(lib_order)
+        # lib_order = np.arange(0, self.NUM_LIBS)
+        # np.random.shuffle(lib_order)
+        lib_order = np.random.permutation(self.NUM_LIBS)
         return lib_order
 
     def random_change(self, lib_order):
         res_lib_order = deepcopy(lib_order)
         # ind1 = np.random.randint(len(lib_order)-1)
         # ind2 = ind1+1
-        inds = np.arange(self.num_libs)
+        inds = np.arange(self.NUM_LIBS)
         np.random.shuffle(inds)
         ind1, ind2 = inds[:2]
 
@@ -37,8 +38,8 @@ class AnnealingProblem(NumpyLibraryProblem):
         if curr_lib_order is None:
             curr_lib_order = self.random_lib_order()
         else:
-            libs = np.arange(self.num_libs)
-            lib_used = np.full(self.num_libs, False)
+            libs = np.arange(self.NUM_LIBS)
+            lib_used = np.full(self.NUM_LIBS, False)
             lib_used[curr_lib_order] = True
             libs_left = libs[~lib_used]
             curr_lib_order = curr_lib_order + list(libs_left)
@@ -79,11 +80,11 @@ class AnnealingProblem(NumpyLibraryProblem):
         curr_lib_sums = self.lib_sums[lib_order]
         # book_lib_props = self.scores_np.reshape((-1,1)).repeat(curr_lib_sums.size, axis=1) / curr_lib_sums
 
-        scans_left = self.num_days - self.signup_times[lib_order].cumsum()
+        scans_left = self.NUM_DAYS - self.signup_times[lib_order].cumsum()
 
         lib_available = np.full(len(lib_order), True)
         book_schedules = {lib: [] for lib in lib_order}
-        for book in range(self.num_books):
+        for book in range(self.NUM_BOOKS):
             if not lib_available.any():
                 break
             lib_contains_book = np.any(self.libraries_np == book, axis=1).reshape(-1)[lib_order]
@@ -103,12 +104,12 @@ class AnnealingProblem(NumpyLibraryProblem):
         res_score = 0
 
         signupcumsum = self.signup_times[lib_order].cumsum()
-        mask = signupcumsum < self.num_days
+        mask = signupcumsum < self.NUM_DAYS
         lib_order = lib_order[mask]
 
-        scans_left = self.num_days - signupcumsum
-        book_available = np.full(self.num_books, True)
-        days_left = self.num_days
+        scans_left = self.NUM_DAYS - signupcumsum
+        book_available = np.full(self.NUM_BOOKS, True)
+        days_left = self.NUM_DAYS
         # for i in range(len(lib_order)):
         for i, (current_lo, current_sl) in enumerate(zip(lib_order, scans_left)):
             # if scans_left[i] <= 0:

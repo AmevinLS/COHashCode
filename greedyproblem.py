@@ -1,20 +1,22 @@
 # flake8: noqa
 
 import numpy as np
+
 from baseproblems import NumpyLibraryProblem, profiletime
+
 
 class GreedyProblem(NumpyLibraryProblem):
     def __init__(self, filepath: str):
         super().__init__(filepath)
 
-        self.lib_evals = np.zeros(self.num_libs)
-        
-        self.libs_used = np.full(self.num_libs, False)
-            
-    
+        self.lib_evals = np.zeros(self.NUM_LIBS)
+
+        self.libs_used = np.full(self.NUM_LIBS, False)
+
+
     def evaluate_lib(self, lib, days_left: int):
         scans_left = (days_left - self.signup_times[lib]) * self.scan_speeds[lib]
-        
+
         # books_left = set(self.libraries[lib]) - self.scanned_books
         # books_sorted = np.array(
         #     sorted(books_left, key=lambda book: self.scores[book])
@@ -36,7 +38,7 @@ class GreedyProblem(NumpyLibraryProblem):
         scans_left[scans_left < 0] = 0
         libs_books_scores = self.scores_np[self.libraries_np]
         libs_books_scores.sort(axis=1)
-        
+
         _inds = np.arange(libs_books_scores.shape[1]-1, -1, -1)
         _inds = np.tile(_inds, libs_books_scores.shape[0]).reshape((-1, _inds.size))
 
@@ -64,13 +66,13 @@ class GreedyProblem(NumpyLibraryProblem):
         self.scores_np[books] = 0
 
     def greedy(self):
-        days_left = self.num_days
+        days_left = self.NUM_DAYS
         lib_order = []
         lib_books_scanned = dict()
         while days_left > 1:
             if np.all(self.libs_used):
                 break
-            
+
             self._update_lib_evals(days_left)
             best_lib = self.select_lib()
             if self.lib_evals[best_lib] == 0:
@@ -82,7 +84,7 @@ class GreedyProblem(NumpyLibraryProblem):
             self.remove_books(chosen_books)
 
             days_left -= self.signup_times[best_lib]
-        
+
         return lib_order, lib_books_scanned
 
 
@@ -90,7 +92,7 @@ if __name__ == "__main__":
     TOTAL_SUM = 0
 
     files = [
-        "a_example", "b_read_on", "c_incunabula", 
+        "a_example", "b_read_on", "c_incunabula",
         "d_tough_choices", "e_so_many_books", "f_libraries_of_the_world"
     ]
     for file in files[:4]:
