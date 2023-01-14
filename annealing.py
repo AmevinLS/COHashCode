@@ -99,23 +99,38 @@ class AnnealingProblem(NumpyLibraryProblem):
     def evaluate_lib_order2(self, lib_order):
         res_score = 0
 
-        mask = self.signup_times[lib_order].cumsum() < self.num_days
+        signupcumsum = self.signup_times[lib_order].cumsum()
+        mask = signupcumsum < self.num_days
         lib_order = lib_order[mask]
 
-        scans_left = self.num_days - self.signup_times[lib_order].cumsum()
+        scans_left = self.num_days - signupcumsum
         book_available = np.full(self.num_books, True)
+        days_left = self.num_days
         for i in range(len(lib_order)):
+            if scans_left[i] <= 0:
+                break
+
             lib = lib_order[i]
 
             books = self.libraries[lib]
-            books = books[book_available[books]]
+            
+            # books = books[book_available[books]]
+            books = books[np.where(book_available[books])[0]]
+            
             scores = self.scores[books]
-            inds_sorted = scores.argsort()
-            inds_chosen = inds_sorted[:scans_left[i]]
-            books_chosen = books[inds_chosen]
+            # inds_sorted = scores.argsort()
+            # inds_chosen = inds_sorted[:scans_left[i]]
+
+            if scans_left[i] > scores.size:
+                books_chosen = books
+            else:
+                inds_chosen = np.argpartition(scores, -scans_left[i])[-scans_left[i]:]
+                books_chosen = books[inds_chosen]
             
             book_available[books_chosen] = False
             res_score += self.scores[books_chosen].sum()
+
+            days_left -= self.signup_times[lib]
         
         return res_score
             

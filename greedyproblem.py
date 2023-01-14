@@ -1,7 +1,7 @@
 # flake8: noqa
 
 import numpy as np
-from baseproblems import NumpyLibraryProblem
+from baseproblems import NumpyLibraryProblem, profiletime
 
 class GreedyProblem(NumpyLibraryProblem):
     def __init__(self, filepath: str):
@@ -32,15 +32,27 @@ class GreedyProblem(NumpyLibraryProblem):
         return lib_eval, chosen_books[chosen_books != self.null_book]
 
     def _update_lib_evals(self, days_left: int):
-        scans_left = (days_left - self.signup_times.astype(np.int32)) * self.scan_speeds
+        scans_left = (days_left - self.signup_times) * self.scan_speeds
         scans_left[scans_left < 0] = 0
         libs_books_scores = self.scores_np[self.libraries_np]
-        libs_books_scores = -np.sort(-libs_books_scores, axis=1)
+        libs_books_scores.sort(axis=1)
         
-        _inds = np.arange(libs_books_scores.shape[1])
+        _inds = np.arange(libs_books_scores.shape[1]-1, -1, -1)
         _inds = np.tile(_inds, libs_books_scores.shape[0]).reshape((-1, _inds.size))
+
+        # _inds = np.ones(libs_books_scores.shape).cumsum(axis=1) - 1
+
         mask = _inds < scans_left.reshape((scans_left.size, 1))
         self.lib_evals = libs_books_scores.sum(axis=1, where=mask) / (self.signup_times)**2
+
+        # for i in range(libs_books_scores.shape[0]):
+        #     if scans_left[i] > libs_books_scores[i].size:
+        #         row = libs_books_scores[i]
+        #     elif scans_left[i] == 0:
+        #         row = np.array([0])
+        #     else:
+        #         row = np.partition(libs_books_scores[i], -scans_left[i])[-scans_left[i]:]
+        #     self.lib_evals[i] = row.sum() / self.signup_times[i]**2
 
         self.lib_evals[self.libs_used] = 0
 
@@ -81,7 +93,7 @@ if __name__ == "__main__":
         "a_example", "b_read_on", "c_incunabula", 
         "d_tough_choices", "e_so_many_books", "f_libraries_of_the_world"
     ]
-    for file in files:
+    for file in files[:4]:
         path = f"resources/{file}.txt"
         problem = GreedyProblem(path)
         lib_order, lib_books_scanned = problem.greedy()

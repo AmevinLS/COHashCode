@@ -18,7 +18,8 @@ def profiletime(func):
         stats = pstats.Stats(profiler, stream=stream)
         stats.sort_stats("cumtime")
         stats.print_stats()
-        
+        stream.close()
+
         return result
     
     return wrapper
@@ -68,6 +69,8 @@ class NumpyLibraryProblem(LibraryProblem):
 
         self.null_book = len(self.scores)
         self.scores_np = np.append(self.scores, 0)
+        self.scores_np = self.scores_np.astype(np.int32)
+        self.signup_times = np.array(self.signup_times, dtype=np.int32)
         
         self.libraries_np = deepcopy(self.libraries)
         max_libsize = max([library.size for library in self.libraries_np])
