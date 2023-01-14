@@ -47,13 +47,10 @@ class AnnealingProblem(NumpyLibraryProblem):
             next_lib_order = self.random_change(curr_lib_order)
             next_eval = self.evaluate_lib_order2(next_lib_order)
 
-            prob = np.exp(-(curr_eval - next_eval) / curr_temp)
-            # prob = np.exp((next_eval - curr_eval) / curr_temp)
+            prob = np.exp((next_eval - curr_eval) / curr_temp)
             if next_eval > curr_eval:
                 prob = 1
-            if prob > 1:
-                print(prob)
-            if (next_eval > curr_eval) or np.random.random() < prob:
+            if np.random.random() <= prob:
                 curr_lib_order = next_lib_order
                 curr_eval = next_eval
 
