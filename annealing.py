@@ -143,10 +143,10 @@ class AnnealingProblem(NumpyLibraryProblem):
         res_score = 0
 
         signupcumsum = self.signup_times[lib_order].cumsum()
-        mask = signupcumsum < self.num_days
+        mask = signupcumsum < self.NUM_DAYS
         lib_order = lib_order[mask]
 
-        scans_left = (self.num_days - signupcumsum)[mask]
+        scans_left = (self.NUM_DAYS - signupcumsum)[mask]
         avg_scans_left = int(scans_left.mean())
         
         scores = self.scores_np[self.libraries_np]
