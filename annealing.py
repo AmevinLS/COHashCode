@@ -26,8 +26,10 @@ class AnnealingProblem(NumpyLibraryProblem):
         return res_lib_order
 
     def _annealing(self, num_iters, start_temp=10, start_lib_order: list = None):
-        power = np.log(np.log(100)/0.01) / np.log(num_iters)
-        
+        leniency = 0.001
+        power = np.log(np.log(100)/leniency) / np.log(num_iters)
+        alpha = 0.995
+
         curr_lib_order = start_lib_order
         if curr_lib_order is None:
             curr_lib_order = self.random_lib_order()
@@ -48,14 +50,15 @@ class AnnealingProblem(NumpyLibraryProblem):
             next_lib_order = self.random_change(curr_lib_order)
             next_eval = self.evaluate_lib_order2(next_lib_order)
 
-            prob = 1 / (np.exp((curr_eval - next_eval) / curr_temp))
+            prob = np.exp(-(curr_eval - next_eval) / curr_temp)
             if next_eval > curr_eval:
                 prob = 1
             if (next_eval > curr_eval) or np.random.random() < prob:
                 curr_lib_order = next_lib_order
                 curr_eval = next_eval
 
-            curr_temp = start_temp / (k+1)**power
+            # curr_temp = start_temp / (k+1)**power
+            curr_temp = start_temp * alpha**k
             history.append(curr_eval)
             temps.append(curr_temp)
             probs.append(prob)
@@ -64,7 +67,7 @@ class AnnealingProblem(NumpyLibraryProblem):
 
     @profiletime
     def run_annealing(self, num_iters, start_lib_order: list = None):    
-        short_hist, _, _ = self._annealing(num_iters=100, start_temp=1000000000, start_lib_order=start_lib_order)
+        _, short_hist, _ = self._annealing(num_iters=100, start_temp=1000000000, start_lib_order=start_lib_order)
         start_temp = np.mean(short_hist)
         return self._annealing(num_iters, start_temp, start_lib_order)
         
