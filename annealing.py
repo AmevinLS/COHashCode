@@ -13,19 +13,12 @@ class AnnealingProblem(NumpyLibraryProblem):
         self.lib_sums = self.scores_np[self.libraries_np].sum(axis=1).reshape((-1,))
 
     def random_lib_order(self):
-        # lib_order = np.arange(0, self.NUM_LIBS)
-        # np.random.shuffle(lib_order)
         lib_order = np.random.permutation(self.NUM_LIBS)
         return lib_order
 
     def random_change(self, lib_order):
         res_lib_order = deepcopy(lib_order)
-        # ind1 = np.random.randint(len(lib_order)-1)
-        # ind2 = ind1+1
-        inds = np.arange(self.NUM_LIBS)
-        np.random.shuffle(inds)
-        ind1, ind2 = inds[:2]
-
+        ind1, ind2 = np.random.choice(self.NUM_LIBS, 2, replace=False)
         res_lib_order[ind1], res_lib_order[ind2] = res_lib_order[ind2], res_lib_order[ind1]
         return res_lib_order
 
@@ -55,8 +48,11 @@ class AnnealingProblem(NumpyLibraryProblem):
             next_eval = self.evaluate_lib_order2(next_lib_order)
 
             prob = np.exp(-(curr_eval - next_eval) / curr_temp)
+            # prob = np.exp((next_eval - curr_eval) / curr_temp)
             if next_eval > curr_eval:
                 prob = 1
+            if prob > 1:
+                print(prob)
             if (next_eval > curr_eval) or np.random.random() < prob:
                 curr_lib_order = next_lib_order
                 curr_eval = next_eval
@@ -165,7 +161,7 @@ if __name__ == "__main__":
         path = f"resources/{file}.txt"
 
         anneal_problem = AnnealingProblem(path)
-        lib_order, history, probs = anneal_problem.run_annealing(num_iters=10000)
+        lib_order, history, probs = anneal_problem.run_annealing(num_iters=10)
 
         eval = anneal_problem.evaluate_lib_order2(lib_order)
         print(f"File: {file}, Approx_eval: {eval}")
