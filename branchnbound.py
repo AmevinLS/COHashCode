@@ -1,28 +1,13 @@
 # flake8: noqa
 from queue import LifoQueue, PriorityQueue
-from reader import read_file
 from typing import Dict, List
 from itertools import combinations, product
 from copy import deepcopy
 import numpy as np
 
-import cProfile
-import pstats
 
-def profiletime(func):
-    def wrapper(*args, **kwargs):
-        profiler = cProfile.Profile()
-        profiler.enable()
-        result = func(*args, **kwargs)
-        profiler.disable()
-        stream = open("test.txt", "w")
-        stats = pstats.Stats(profiler, stream=stream)
-        stats.sort_stats("cumtime")
-        stats.print_stats()
-        
-        return result
-    
-    return wrapper
+from baseproblems import LibraryProblem
+from greedyproblem import GreedyProblem
 
 
 class CandidateSolutionNode:
@@ -96,15 +81,9 @@ class CandidateSolutionNode:
         return children
 
 
-class LibraryProblem:
+class BandBProblem(LibraryProblem):
     def __init__(self, filepath: str):
-        n, t, m, libs, s, d = read_file(filepath)
-        _, self.signup_times = n, t
-        self.scan_speeds, self.libraries, self.scores = m, libs, s
-        self.num_days = d
-        self.books_ordered = (-self.scores).argsort()
-        self.num_libs = len(self.libraries)
-        self.num_books = len(self.scores)
+        super().__init__(filepath)
 
     def populate_stack_with_candidates(self, stack: LifoQueue):
         for lib in range(len(self.libraries)):
@@ -178,115 +157,32 @@ class LibraryProblem:
                 best_score = curr_score
         return best_lib, best_score
 
-def branch_and_bound_solve(problem: LibraryProblem):
-    problem_lower_bound = float("-inf")
-    candidate_stack = LifoQueue()
-    current_optimum = None
-    problem.populate_stack_with_candidates(candidate_stack)
+    def branch_and_bound_solve(self):
+        problem_lower_bound = float("-inf")
+        candidate_stack = LifoQueue()
+        current_optimum = None
+        self.populate_stack_with_candidates(candidate_stack)
 
-    i = 0
-    while not candidate_stack.empty():
-        i+=1
-        if i == 20:
-            break
-        print(f"Stack size: {len(candidate_stack.queue)}")
-        node: CandidateSolutionNode = candidate_stack.get()
-        if problem.is_single_candidate(node):
-            print("Arrived in leaf")
-            if problem.objective_func(node) > problem_lower_bound:
-                current_optimum = node
-                problem_lower_bound = problem.objective_func(node)
-                print(f"New lower bound: {problem_lower_bound}")
-        else:
-            for child_node in node.get_children(problem):
-                if problem.upper_bound_func(child_node) >= problem_lower_bound:
-                    candidate_stack.put(child_node)
-
-    return current_optimum
-
-
-class GreedyProblem(LibraryProblem):
-    def __init__(self, filepath: str):
-        super().__init__(filepath)
-        self.orig_scores = deepcopy(self.scores)
-
-        self.lib_evals = np.zeros(self.num_libs)
-        
-        self.null_book = len(self.scores)
-        self.scores = np.append(self.scores, 0)
-        
-        max_libsize = max([library.size for library in self.libraries])
-        for i in range(self.num_libs):
-            self.libraries[i] = np.append(self.libraries[i], np.full(max_libsize - self.libraries[i].size, self.null_book))
-        self.libraries = np.array(self.libraries)
-        
-        self.libs_used = np.full(self.num_libs, False)
-            
-    
-    def evaluate_lib(self, lib, days_left: int):
-        scans_left = (days_left - self.signup_times[lib]) * self.scan_speeds[lib]
-        
-        # books_left = set(self.libraries[lib]) - self.scanned_books
-        # books_sorted = np.array(
-        #     sorted(books_left, key=lambda book: self.scores[book])
-        # )
-        # chosen_books = books_sorted[:scans_left]
-
-        inds = (-self.scores[self.libraries[lib]]).argsort()
-        books_sorted = self.libraries[lib][inds]
-        chosen_books = books_sorted[:scans_left]
-
-        if len(chosen_books) == 0:
-            return 0, chosen_books
-
-        lib_eval = self.scores[chosen_books].sum() / self.signup_times[lib]
-        return lib_eval, chosen_books[chosen_books != self.null_book]
-
-    def _update_lib_evals(self, days_left: int):
-        scans_left = (days_left - self.signup_times) * self.scan_speeds
-        libs_books_scores = self.scores[self.libraries]
-        libs_books_scores = -np.sort(-libs_books_scores, axis=1)
-        
-        _inds = np.arange(libs_books_scores.shape[1])
-        _inds = np.tile(_inds, libs_books_scores.shape[0]).reshape((-1, _inds.size))
-        mask = _inds < scans_left.reshape((scans_left.size, 1))
-        self.lib_evals = libs_books_scores.sum(axis=1, where=mask) / (self.signup_times)**2
-
-        self.lib_evals[self.libs_used] = 0
-
-    def select_lib(self) -> int:
-        best_lib = self.lib_evals.argmax()
-        return best_lib
-
-    def remove_books(self, books):
-        self.scores[books] = 0
-
-    @profiletime
-    def greedy(self):
-        TOTAL_SCORE = 0
-        
-        days_left = self.num_days
-        lib_order = []
-        lib_books_scanned = dict()
-        while days_left > 0:
-            if np.all(self.libs_used):
+        i = 0
+        while not candidate_stack.empty():
+            i+=1
+            if i == 20:
                 break
-            
-            self._update_lib_evals(days_left)
-            best_lib = self.select_lib()
-            if self.lib_evals[best_lib] == 0:
-                break
-            _, chosen_books = self.evaluate_lib(best_lib, days_left)
-            lib_order.append(best_lib)
-            lib_books_scanned[best_lib] = chosen_books
-            TOTAL_SCORE += self.scores[chosen_books].sum()
-            self.libs_used[best_lib] = True
-            self.remove_books(chosen_books)
+            print(f"Stack size: {len(candidate_stack.queue)}")
+            node: CandidateSolutionNode = candidate_stack.get()
+            if self.is_single_candidate(node):
+                print("Arrived in leaf")
+                if self.objective_func(node) > problem_lower_bound:
+                    current_optimum = node
+                    problem_lower_bound = self.objective_func(node)
+                    print(f"New lower bound: {problem_lower_bound}")
+            else:
+                for child_node in node.get_children(self):
+                    if self.upper_bound_func(child_node) >= problem_lower_bound:
+                        candidate_stack.put(child_node)
 
-            days_left -= self.signup_times[best_lib]
-        
-        return TOTAL_SCORE, lib_order, lib_books_scanned
-        
+        return current_optimum
+  
 
 def bad_greedy(problem: LibraryProblem):
     TOTAL_SCORE = 0
@@ -331,38 +227,6 @@ def bad_greedy(problem: LibraryProblem):
 
     return TOTAL_SCORE
 
-            
-FILE = "resources/d_tough_choices.txt"
 
-# problem = LibraryProblem(FILE)
-# result = bad_greedy(problem)
-# print(f"Score: {result}")
-
-# problem = GreedyProblem(FILE)
-# print(problem.libraries)
-# problem._update_lib_evals_vec(7)
-# print(problem.lib_evals)
-# result, lib_order, lib_books_scanned = problem.greedy()
-# print(f"Score: {result}")
-# print(f"LibOrder: {lib_order}")
-# print(f"BooksScanned: {lib_books_scanned}")
-
-# optim_sol = branch_and_bound_solve(problem)
-# print("\n\nSOLUTION:")
-# print(optim_sol)
-# print(f"Score: {problem.objective_func(optim_sol)}")
-
-TOTAL_SUM = 0
-
-files = [
-    "a_example", "b_read_on", "c_incunabula", 
-    "d_tough_choices", "e_so_many_books", "f_libraries_of_the_world"
-]
-for file in files:
-    path = f"resources/{file}.txt"
-    problem = GreedyProblem(path)
-    result, lib_order, lib_books_scanned = problem.greedy()
-    print(f"File: {file}, Result: {result}")
-    TOTAL_SUM += result
-
-print(f"TOTAL_SUM: {TOTAL_SUM}")
+if __name__ == "__main__":
+    pass
