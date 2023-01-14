@@ -1,10 +1,10 @@
 # flake8: noqa
+from copy import deepcopy
+from itertools import combinations, product
 from queue import LifoQueue, PriorityQueue
 from typing import Dict, List
-from itertools import combinations, product
-from copy import deepcopy
-import numpy as np
 
+import numpy as np
 
 from baseproblems import LibraryProblem
 from greedyproblem import GreedyProblem
@@ -17,17 +17,17 @@ class CandidateSolutionNode:
         for lib, books in books_scan.items():
             assert isinstance(lib, int)
             assert isinstance(books, set)
-        self.num_days = num_days
+        self.NUM_DAYS = num_days
         self.lib_order = lib_order
         self.books_scan = books_scan
 
     def __str__(self):
-        res = f"Last day: {self.num_days-1}\n"
+        res = f"Last day: {self.NUM_DAYS-1}\n"
         res += f"Lib order: {self.lib_order}\n"
         for lib, books in self.books_scan.items():
             res += f"{lib}: {books}" + "\n"
         return res
-    
+
     def get_scanned_books(self) -> set:
         scanned_books = set()
         for books in self.books_scan.values():
@@ -36,7 +36,7 @@ class CandidateSolutionNode:
 
     def get_children(self, problem):
         next_poss_libs = set()
-        if problem.signup_times[self.lib_order].sum() <= self.num_days:
+        if problem.signup_times[self.lib_order].sum() <= self.NUM_DAYS:
             all_libs = set(range(len(problem.libraries)))
             next_poss_libs = all_libs.difference(set(self.lib_order))
 
@@ -44,7 +44,7 @@ class CandidateSolutionNode:
         cumul_signup_time = 0
         for lib in self.lib_order:
             cumul_signup_time += problem.signup_times[lib]
-            if cumul_signup_time > self.num_days: # the current library is still signing up
+            if cumul_signup_time > self.NUM_DAYS: # the current library is still signing up
                 break
             remaining_books = set(problem.libraries[lib]).difference(self.get_scanned_books())
             next_poss_books[lib] = list(combinations(remaining_books, problem.scan_speeds[lib]))
@@ -58,7 +58,7 @@ class CandidateSolutionNode:
             #     schedule_list += list(next_books)
             # if len(schedule_list) != len(set(schedule_list)):
             #     continue
-            
+
             # Adding the child (children if we can sign up a new library)
             child_books_scan = deepcopy(self.books_scan)
             libs = list(next_poss_books.keys())
@@ -66,7 +66,7 @@ class CandidateSolutionNode:
                 child_books_scan[libs[i]].update(poss_book_schedule[i])
             if len(next_poss_libs) == 0:
                 child = CandidateSolutionNode(
-                    self.num_days+1, self.lib_order, child_books_scan
+                    self.NUM_DAYS+1, self.lib_order, child_books_scan
                 )
                 children.append(child)
             else:
@@ -74,10 +74,10 @@ class CandidateSolutionNode:
                     temp_books_scan = deepcopy(child_books_scan)
                     temp_books_scan.update({next_poss_lib: set()})
                     child = CandidateSolutionNode(
-                        self.num_days+1, self.lib_order + [next_poss_lib],
+                        self.NUM_DAYS+1, self.lib_order + [next_poss_lib],
                         temp_books_scan
                     )
-                    children.append(child)        
+                    children.append(child)
         return children
 
 
@@ -91,7 +91,7 @@ class BandBProblem(LibraryProblem):
             stack.put(node)
 
     def is_single_candidate(self, node: CandidateSolutionNode) -> bool:
-        return (node.num_days == self.num_days)
+        return (node.num_days == self.NUM_DAYS)
 
     def objective_func(self, node: CandidateSolutionNode) -> int:
         res = 0
@@ -109,7 +109,7 @@ class BandBProblem(LibraryProblem):
         # return float("inf")
         print("Started upper_bound_func")
         res = 0
-        days_left = self.num_days - node.num_days
+        days_left = self.NUM_DAYS - node.num_days
         for lib in node.lib_order:
             scans_left = days_left * self.scan_speeds[lib]
             unscanned_books = set(self.libraries[lib]).difference(
@@ -120,7 +120,7 @@ class BandBProblem(LibraryProblem):
             )
             unscanned_scores[::-1].sort()
             res += unscanned_scores[:scans_left].sum()
-        
+
         temp_days_left = days_left
         while temp_days_left > 0:
             best_lib, best_score = self._get_best_lib_greedy(
@@ -137,7 +137,7 @@ class BandBProblem(LibraryProblem):
         # SOMETHING'S REALLY WRONG HERE
         res = (-self.scores[list(books)]).argsort()
         return res
-    
+
     def _get_best_lib_greedy(self, signed_libs, scanned_books: set, days_left: int):
         best_lib = None
         best_score = 0
@@ -182,7 +182,7 @@ class BandBProblem(LibraryProblem):
                         candidate_stack.put(child_node)
 
         return current_optimum
-  
+
 
 def bad_greedy(problem: LibraryProblem):
     TOTAL_SCORE = 0
@@ -191,7 +191,7 @@ def bad_greedy(problem: LibraryProblem):
     for books in problem.libraries:
         for book in books:
             book_counts[book] += 1
-    
+
     adj_book_scores = problem.scores # / book_counts
     lib_scores = np.zeros(problem.num_libs)
     for lib in range(problem.num_libs):
