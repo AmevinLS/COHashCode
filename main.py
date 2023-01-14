@@ -5,7 +5,7 @@ from annealing import AnnealingProblem
 import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
-    FILE = "resources/f_libraries_of_the_world.txt"
+    FILE = "resources/d_tough_choices.txt"
     anneal_problem = AnnealingProblem(FILE)
     greedy_problem = GreedyProblem(FILE)
     lib_order, _ = greedy_problem.greedy()

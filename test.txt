@@ -1,77 +1,45 @@
-         1553353 function calls in 5.308 seconds
+         313160 function calls in 22.079 seconds
 
    Ordered by: cumulative time
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        1    0.001    0.001    5.308    5.308 d:\Documents\University\Semester3\Combinatorial_Optimization\COHashCode\annealing.py:68(run_annealing)
-        2    0.142    0.071    5.308    2.654 d:\Documents\University\Semester3\Combinatorial_Optimization\COHashCode\annealing.py:28(_annealing)
-    10102    2.710    0.000    4.748    0.000 d:\Documents\University\Semester3\Combinatorial_Optimization\COHashCode\annealing.py:99(evaluate_lib_order2)
-   209669    0.296    0.000    1.345    0.000 {built-in method numpy.core._multiarray_umath.implement_array_function}
-    93302    0.060    0.000    1.165    0.000 <__array_function__ internals>:2(argpartition)
-    93302    0.065    0.000    1.048    0.000 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\core\fromnumeric.py:754(argpartition)
-    93302    0.050    0.000    0.983    0.000 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\core\fromnumeric.py:55(_wrapfunc)
-    93302    0.917    0.000    0.917    0.000 {method 'argpartition' of 'numpy.ndarray' objects}
-   106262    0.063    0.000    0.441    0.000 {method 'sum' of 'numpy.ndarray' objects}
-    10100    0.061    0.000    0.397    0.000 d:\Documents\University\Semester3\Combinatorial_Optimization\COHashCode\annealing.py:17(random_change)
-   106262    0.033    0.000    0.378    0.000 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\core\_methods.py:36(_sum)
-   106263    0.345    0.000    0.345    0.000 {method 'reduce' of 'numpy.ufunc' objects}
-   106262    0.067    0.000    0.290    0.000 <__array_function__ internals>:2(where)
-    10100    0.234    0.000    0.234    0.000 {method 'shuffle' of 'numpy.random.mtrand.RandomState' objects}
-    10104    0.019    0.000    0.099    0.000 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\core\numeric.py:283(full)
-    10100    0.030    0.000    0.073    0.000 C:\programs\x64\conda\envs\niki_test\lib\copy.py:132(deepcopy)
-    10104    0.010    0.000    0.054    0.000 <__array_function__ internals>:2(copyto)
-    10102    0.042    0.000    0.042    0.000 {method 'cumsum' of 'numpy.ndarray' objects}
-    10102    0.028    0.000    0.028    0.000 {built-in method numpy.arange}
-    10104    0.019    0.000    0.019    0.000 {built-in method numpy.empty}
-    10100    0.016    0.000    0.018    0.000 C:\programs\x64\conda\envs\niki_test\lib\copy.py:253(_keep_alive)
-   103402    0.018    0.000    0.018    0.000 {built-in method builtins.getattr}
-    10100    0.018    0.000    0.018    0.000 {method '__deepcopy__' of 'numpy.ndarray' objects}
-    10079    0.017    0.000    0.017    0.000 {method 'random' of 'numpy.random.mtrand.RandomState' objects}
-   106262    0.014    0.000    0.014    0.000 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\core\multiarray.py:312(where)
-    93302    0.012    0.000    0.012    0.000 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\core\fromnumeric.py:750(_argpartition_dispatcher)
-    10107    0.007    0.000    0.007    0.000 {built-in method numpy.array}
-    20200    0.004    0.000    0.004    0.000 {method 'get' of 'dict' objects}
-    30300    0.003    0.000    0.003    0.000 {method 'append' of 'list' objects}
-    30300    0.003    0.000    0.003    0.000 {built-in method builtins.id}
-    10104    0.002    0.000    0.002    0.000 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\core\multiarray.py:1043(copyto)
-    10101    0.002    0.000    0.002    0.000 {built-in method builtins.issubclass}
-    10103    0.002    0.000    0.002    0.000 {built-in method builtins.len}
-        1    0.000    0.000    0.001    0.001 C:\programs\x64\conda\envs\niki_test\lib\warnings.py:96(_showwarnmsg)
-        1    0.000    0.000    0.001    0.001 C:\programs\x64\conda\envs\niki_test\lib\warnings.py:20(_showwarnmsg_impl)
-        1    0.000    0.000    0.000    0.000 {method 'write' of '_io.TextIOWrapper' objects}
-        1    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\warnings.py:117(_formatwarnmsg)
-        1    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\warnings.py:35(_formatwarnmsg_impl)
-        1    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\linecache.py:15(getline)
-        1    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\linecache.py:37(getlines)
-        1    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\linecache.py:82(updatecache)
-        1    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\tokenize.py:443(open)
-        1    0.000    0.000    0.000    0.000 {built-in method nt.stat}
-        1    0.000    0.000    0.000    0.000 <__array_function__ internals>:2(mean)
-        1    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\core\fromnumeric.py:3231(mean)
-        1    0.000    0.000    0.000    0.000 {method 'readlines' of '_io._IOBase' objects}
-        1    0.000    0.000    0.000    0.000 {built-in method io.open}
-        1    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\core\_methods.py:134(_mean)
-        1    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\tokenize.py:350(detect_encoding)
-        2    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\tokenize.py:374(read_or_stop)
-        2    0.000    0.000    0.000    0.000 {method 'readline' of '_io.BufferedReader' objects}
-        1    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\core\_asarray.py:88(asanyarray)
-        1    0.000    0.000    0.000    0.000 {built-in method builtins.hasattr}
-        2    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\codecs.py:319(decode)
-        2    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\tokenize.py:380(find_cookie)
-        1    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\core\_methods.py:50(_count_reduce_items)
-        1    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\warnings.py:415(__init__)
-        3    0.000    0.000    0.000    0.000 {method 'match' of 're.Pattern' objects}
-        2    0.000    0.000    0.000    0.000 {built-in method _codecs.utf_8_decode}
-        1    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\codecs.py:309(__init__)
-        2    0.000    0.000    0.000    0.000 {built-in method builtins.isinstance}
-        2    0.000    0.000    0.000    0.000 {method 'decode' of 'bytes' objects}
-        1    0.000    0.000    0.000    0.000 {method 'startswith' of 'bytes' objects}
-        1    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\codecs.py:260(__init__)
-        1    0.000    0.000    0.000    0.000 {method 'seek' of '_io.BufferedReader' objects}
-        1    0.000    0.000    0.000    0.000 {method 'startswith' of 'str' objects}
-        1    0.000    0.000    0.000    0.000 {method 'strip' of 'str' objects}
-        1    0.000    0.000    0.000    0.000 {method 'endswith' of 'str' objects}
+        1    0.000    0.000   22.079   22.079 d:\Documents\University\Semester3\Combinatorial_Optimization\COHashCode\annealing.py:70(run_annealing)
+        2    1.328    0.664   22.078   11.039 d:\Documents\University\Semester3\Combinatorial_Optimization\COHashCode\annealing.py:30(_annealing)
+    10102   11.605    0.001   14.392    0.001 d:\Documents\University\Semester3\Combinatorial_Optimization\COHashCode\annealing.py:147(evaluate_lib_order_fast)
+    10100    0.100    0.000    6.307    0.001 d:\Documents\University\Semester3\Combinatorial_Optimization\COHashCode\annealing.py:20(random_change)
+    10100    5.887    0.001    5.887    0.001 {method 'permutation' of 'numpy.random.mtrand.RandomState' objects}
+    20205    1.997    0.000    1.997    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+    10102    0.020    0.000    1.814    0.000 {method 'sum' of 'numpy.ndarray' objects}
+    10102    0.009    0.000    1.794    0.000 C:\programs\x64\conda\envs\faster\Lib\site-packages\numpy\core\_methods.py:47(_sum)
+    10102    0.560    0.000    0.560    0.000 {method 'cumsum' of 'numpy.ndarray' objects}
+    10102    0.020    0.000    0.412    0.000 {method 'mean' of 'numpy.ndarray' objects}
+    10103    0.089    0.000    0.392    0.000 C:\programs\x64\conda\envs\faster\Lib\site-packages\numpy\core\_methods.py:164(_mean)
+    10100    0.061    0.000    0.317    0.000 C:\programs\x64\conda\envs\faster\Lib\copy.py:128(deepcopy)
+    10100    0.197    0.000    0.197    0.000 {method '__deepcopy__' of 'numpy.ndarray' objects}
+    10103    0.068    0.000    0.073    0.000 C:\programs\x64\conda\envs\faster\Lib\site-packages\numpy\core\_methods.py:67(_count_reduce_items)
+    10100    0.042    0.000    0.042    0.000 {method 'random' of 'numpy.random.mtrand.RandomState' objects}
+    10100    0.036    0.000    0.040    0.000 C:\programs\x64\conda\envs\faster\Lib\copy.py:243(_keep_alive)
+    30300    0.008    0.000    0.008    0.000 {built-in method builtins.id}
+    20200    0.007    0.000    0.007    0.000 {method 'get' of 'dict' objects}
+    10103    0.006    0.000    0.006    0.000 {built-in method builtins.isinstance}
+    20203    0.006    0.000    0.006    0.000 {built-in method builtins.issubclass}
+    30300    0.006    0.000    0.006    0.000 {method 'append' of 'list' objects}
+    10103    0.005    0.000    0.005    0.000 {built-in method builtins.hasattr}
+    10103    0.005    0.000    0.005    0.000 {built-in method numpy.core._multiarray_umath.normalize_axis_index}
+    10100    0.005    0.000    0.005    0.000 {built-in method builtins.getattr}
+    10103    0.004    0.000    0.004    0.000 {built-in method numpy.asanyarray}
+        2    0.004    0.002    0.004    0.002 {built-in method numpy.array}
+    10100    0.003    0.000    0.003    0.000 {built-in method builtins.len}
+        3    0.000    0.000    0.000    0.000 {built-in method numpy.core._multiarray_umath.implement_array_function}
+        1    0.000    0.000    0.000    0.000 <__array_function__ internals>:177(mean)
+        1    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\faster\Lib\site-packages\numpy\core\fromnumeric.py:3345(mean)
+        2    0.000    0.000    0.000    0.000 {built-in method numpy.arange}
+        2    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\faster\Lib\site-packages\numpy\core\numeric.py:290(full)
+        2    0.000    0.000    0.000    0.000 <__array_function__ internals>:177(copyto)
+        2    0.000    0.000    0.000    0.000 {built-in method numpy.empty}
         1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
-        1    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\niki_test\lib\site-packages\numpy\core\fromnumeric.py:3227(_mean_dispatcher)
+        2    0.000    0.000    0.000    0.000 {built-in method numpy.asarray}
+        2    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\faster\Lib\site-packages\numpy\core\multiarray.py:1079(copyto)
+        1    0.000    0.000    0.000    0.000 C:\programs\x64\conda\envs\faster\Lib\site-packages\numpy\core\fromnumeric.py:3340(_mean_dispatcher)
 
 

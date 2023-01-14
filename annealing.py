@@ -21,8 +21,7 @@ class AnnealingProblem(NumpyLibraryProblem):
         res_lib_order = deepcopy(lib_order)
         # ind1 = np.random.randint(len(lib_order)-1)
         # ind2 = ind1+1
-        inds = np.arange(self.num_libs)
-        np.random.shuffle(inds)
+        inds = np.random.permutation(len(lib_order))
         ind1, ind2 = inds[:2]
 
         res_lib_order[ind1], res_lib_order[ind2] = res_lib_order[ind2], res_lib_order[ind1]
@@ -44,14 +43,14 @@ class AnnealingProblem(NumpyLibraryProblem):
             curr_lib_order = curr_lib_order + list(libs_left)
         curr_lib_order = np.array(curr_lib_order)
 
-        curr_eval = self.evaluate_lib_order2(curr_lib_order)
+        curr_eval = self.evaluate_lib_order_fast(curr_lib_order)
         history = [curr_eval]
         temps = [start_temp]
         curr_temp = start_temp
         probs = []
         for k in range(num_iters):
             next_lib_order = self.random_change(curr_lib_order)
-            next_eval = self.evaluate_lib_order2(next_lib_order)
+            next_eval = self.evaluate_lib_order_fast(next_lib_order)
 
             prob = np.exp(-(curr_eval - next_eval) / curr_temp)
             if next_eval > curr_eval:
@@ -109,6 +108,7 @@ class AnnealingProblem(NumpyLibraryProblem):
         scans_left = self.num_days - signupcumsum
         book_available = np.full(self.num_books, True)
         days_left = self.num_days
+        print(f"Lib_order length: {len(lib_order)}")
         # for i in range(len(lib_order)):
         for i, (current_lo, current_sl) in enumerate(zip(lib_order, scans_left)):
             # if scans_left[i] <= 0:
@@ -144,6 +144,26 @@ class AnnealingProblem(NumpyLibraryProblem):
 
         return res_score
 
+    def evaluate_lib_order_fast(self, lib_order):
+        res_score = 0
+
+        signupcumsum = self.signup_times[lib_order].cumsum()
+        mask = signupcumsum < self.num_days
+        lib_order = lib_order[mask]
+
+        scans_left = (self.num_days - signupcumsum)[mask]
+        avg_scans_left = int(scans_left.mean())
+        
+        scores = self.scores_np[self.libraries_np]
+        
+        if scores.shape[1] < avg_scans_left:
+            pass
+        else:
+            scores = np.partition(scores, -avg_scans_left, axis=1)[:, -avg_scans_left:]
+
+        res_score = scores[:, :avg_scans_left].sum()
+
+        return res_score
 
 class BookFillingProblem(NumpyLibraryProblem):
     def __init__(self, filepath: str):
