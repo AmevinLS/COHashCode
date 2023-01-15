@@ -43,7 +43,7 @@ class GreedyProblem(NumpyLibraryProblem):
     def _update_lib_evals(self, days_left: int):
         scans_left = (days_left - self.signup_times) * self.scan_speeds
         scans_left[scans_left < 0] = 0
-        libs_books_scores = self.scores_np[self.libraries_np] / self.lib_sums
+        libs_books_scores = self.scores_np[self.libraries_np] # / self.lib_sums
         libs_books_scores.sort(axis=1)
 
         _inds = np.arange(libs_books_scores.shape[1]-1, -1, -1)

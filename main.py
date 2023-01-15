@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from threading import Timer
 from reader import read_console
 import sys
+import warnings
 
 class Solver:
     def __init__(self, in_file: str|None = None, out_file: str|None = None):
@@ -47,7 +48,7 @@ class Solver:
             self.flush_results()
             return
 
-        self.bookfill_problem = BookFillingProblem()
+        self.bookfill_problem = BookFillingProblem(self.instance)
         assignments = self.bookfill_problem.run_book_filling(lib_order)
         print("Book filling finished!")
         del self.anneal_problem
@@ -76,8 +77,7 @@ class Solver:
             print(lib, len(self.best_assignments[lib]), file=f)
             print(*self.best_assignments[lib], file=f)
 
-        problem = LibraryProblem(self.instance)
-        print(f"Score achieved: {problem.score_solution(self.best_lib_order, self.best_assignments)}")
+        print(f"File: {self.in_file}, Score: {self.get_score()}")
 
     def stop(self):
         self.stopped = True
@@ -89,12 +89,18 @@ class Solver:
         if self.bookfill_problem is not None:
             self.bookfill_problem.stop()
 
+    def get_score(self):
+        problem = LibraryProblem(self.instance)
+        return problem.score_solution(self.best_lib_order, self.best_assignments) 
+
 if __name__ == "__main__":
-    
+    warnings.filterwarnings("ignore")
+
     solver = Solver("resources/e_so_many_books.txt", "output.txt")
-    timer = Timer(30, solver.stop)
+    timer = Timer(60, solver.stop)
     timer.start()
     solver.solve()
+    timer.cancel()
     exit()
 
     FILE = "resources/e_so_many_books.txt"
@@ -107,6 +113,15 @@ if __name__ == "__main__":
 
     anneal_problem = AnnealingProblem(instance)
     lib_order, history, probs = anneal_problem.run_annealing(num_iters=10000, start_lib_order=lib_order)
+    print("Annealing finished!")
+
+    bookfill_problem = BookFillingProblem(instance)
+    assignments = bookfill_problem.run_book_filling(lib_order)
+    print("Book filling finished!")
+
+    result = bookfill_problem.score_solution(lib_order, assignments)
+    print(f"File: {FILE}, Result: {result}")
+    
     fig, axs = plt.subplots(2, 1, figsize=(10, 7))
     axs[0].plot(history)
     axs[0].set_title("Evaluation history")

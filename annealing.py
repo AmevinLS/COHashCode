@@ -64,6 +64,10 @@ class AnnealingProblem(NumpyLibraryProblem):
             history.append(curr_eval)
             probs.append(prob)
 
+        signupcumsum = self.signup_times[curr_lib_order].cumsum()
+        mask = signupcumsum < self.NUM_DAYS
+        curr_lib_order = curr_lib_order[mask]
+
         return curr_lib_order, history, probs
 
     @profiletime
@@ -106,7 +110,6 @@ class AnnealingProblem(NumpyLibraryProblem):
 
         scans_left = self.NUM_DAYS - signupcumsum
         book_available = np.full(self.NUM_BOOKS, True)
-        days_left = self.NUM_DAYS
         print(f"Lib_order length: {len(lib_order)}")
         # for i in range(len(lib_order)):
         for i, (current_lo, current_sl) in enumerate(zip(lib_order, scans_left)):
@@ -139,7 +142,6 @@ class AnnealingProblem(NumpyLibraryProblem):
             res_score += self.scores[books_chosen].sum()
 
             # days_left -= self.signup_times[lib]
-            days_left -= self.signup_times[current_lo]
 
         return res_score
 
@@ -175,6 +177,28 @@ class BookFillingProblem(NumpyLibraryProblem):
 
     def run_book_filling(self, lib_order):
         assignments = {lib: [] for lib in lib_order}
+        
+        signupcumsum = self.signup_times[lib_order].cumsum()
+        scans_left = self.NUM_DAYS - signupcumsum
+        book_available = np.full(self.NUM_BOOKS, True)
+        for i, (current_lo, current_sl) in enumerate(zip(lib_order, scans_left)):
+            if self.stopped:
+                break
+
+            books = self.libraries[current_lo]
+            books = books[np.where(book_available[books])[0]]
+
+            scores = self.scores[books]
+
+            if current_sl > scores.size:
+                books_chosen = books
+            else:
+                inds_chosen = np.argpartition(scores, -current_sl)[-current_sl:]
+                books_chosen = books[inds_chosen]
+
+            book_available[books_chosen] = False
+            assignments[current_lo] = books_chosen
+        
         return assignments
 
 
@@ -189,10 +213,13 @@ if __name__ == "__main__":
         path = f"resources/{file}.txt"
         instance = Instance(path)
         anneal_problem = AnnealingProblem(instance)
-        lib_order, history, probs = anneal_problem.run_annealing(num_iters=10)
+        lib_order, history, probs = anneal_problem.run_annealing(num_iters=1000)
 
-        eval = anneal_problem.evaluate_lib_order2(lib_order)
-        print(f"File: {file}, Approx_eval: {eval}")
-        TOTAL_SUM += eval
+        bookfill_problem = BookFillingProblem(instance)
+        assignments = bookfill_problem.run_book_filling(lib_order)
+
+        result = bookfill_problem.score_solution(lib_order, assignments)
+        print(f"File: {file}, Results: {result}")
+        TOTAL_SUM += result
 
     print(f"TOTAL_SUM: {TOTAL_SUM}")
