@@ -7,7 +7,7 @@ from typing import Dict, List
 import numpy as np
 
 from baseproblems import LibraryProblem
-from greedyproblem import GreedyProblem
+from greedyproblem import IterativeSortingProblem
 
 
 class CandidateSolutionNode:

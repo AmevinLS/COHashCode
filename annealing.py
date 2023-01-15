@@ -27,9 +27,7 @@ class AnnealingProblem(NumpyLibraryProblem):
         return res_lib_order
 
     def _annealing(self, num_iters, start_temp=10, start_lib_order: list = None):
-        # leniency = 0.001
-        # power = np.log(np.log(100)/leniency) / np.log(num_iters)
-        alpha = 0.995
+        alpha = 0.997
 
         curr_lib_order = start_lib_order
         if curr_lib_order is None:
@@ -59,7 +57,6 @@ class AnnealingProblem(NumpyLibraryProblem):
                 curr_lib_order = next_lib_order
                 curr_eval = next_eval
 
-            # curr_temp = start_temp / (k+1)**power
             curr_temp = start_temp * alpha**k
             history.append(curr_eval)
             probs.append(prob)
@@ -76,7 +73,7 @@ class AnnealingProblem(NumpyLibraryProblem):
         start_temp = np.mean(short_hist)
         return self._annealing(num_iters, start_temp, start_lib_order)
 
-    ### DEPRECATED
+    ### NOT USED
     def evaluate_lib_order(self, lib_order):
         curr_lib_sums = self.lib_sums[lib_order]
         # book_lib_props = self.scores_np.reshape((-1,1)).repeat(curr_lib_sums.size, axis=1) / curr_lib_sums
@@ -101,6 +98,7 @@ class AnnealingProblem(NumpyLibraryProblem):
 
         return book_schedules
 
+    ### NOT USED
     def evaluate_lib_order2(self, lib_order):
         res_score = 0
 
@@ -110,38 +108,24 @@ class AnnealingProblem(NumpyLibraryProblem):
 
         scans_left = self.NUM_DAYS - signupcumsum
         book_available = np.full(self.NUM_BOOKS, True)
-        print(f"Lib_order length: {len(lib_order)}")
-        # for i in range(len(lib_order)):
         for i, (current_lo, current_sl) in enumerate(zip(lib_order, scans_left)):
-            # if scans_left[i] <= 0:
-            #     break
             if current_sl <= 0:
                 break
 
-            # lib = lib_order[i]
-
-            # books = self.libraries[lib]
             books = self.libraries[current_lo]
 
-            # books = books[book_available[books]]
             books = books[np.where(book_available[books])[0]]
 
             scores = self.scores[books]
-            # inds_sorted = scores.argsort()
-            # inds_chosen = inds_sorted[:scans_left[i]]
 
-            # if scans_left[i] > scores.size:
             if current_sl > scores.size:
                 books_chosen = books
             else:
-                # inds_chosen = np.argpartition(scores, -scans_left[i])[-scans_left[i]:]
                 inds_chosen = np.argpartition(scores, -current_sl)[-current_sl:]
                 books_chosen = books[inds_chosen]
 
             book_available[books_chosen] = False
             res_score += self.scores[books_chosen].sum()
-
-            # days_left -= self.signup_times[lib]
 
         return res_score
 

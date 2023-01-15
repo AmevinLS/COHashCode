@@ -6,7 +6,7 @@ from baseproblems import NumpyLibraryProblem, profiletime
 from baseproblems import Instance
 
 
-class GreedyProblem(NumpyLibraryProblem):
+class IterativeSortingProblem(NumpyLibraryProblem):
     def __init__(self, instance: Instance):
         super().__init__(instance)
         self.stopped = False
@@ -24,12 +24,6 @@ class GreedyProblem(NumpyLibraryProblem):
     def evaluate_lib(self, lib, days_left: int):
         scans_left = (days_left - self.signup_times[lib]) * self.scan_speeds[lib]
 
-        # books_left = set(self.libraries[lib]) - self.scanned_books
-        # books_sorted = np.array(
-        #     sorted(books_left, key=lambda book: self.scores[book])
-        # )
-        # chosen_books = books_sorted[:scans_left]
-
         inds = (-self.scores_np[self.libraries_np[lib]]).argsort()
         books_sorted = self.libraries_np[lib][inds]
         chosen_books = books_sorted[:scans_left]
@@ -37,31 +31,21 @@ class GreedyProblem(NumpyLibraryProblem):
         if len(chosen_books) == 0:
             return 0, chosen_books
 
-        lib_eval = self.scores_np[chosen_books].sum() / self.signup_times[lib]
+        lib_eval = self.scores_np[chosen_books].sum() / (np.log(self.signup_times[lib]) + 1)
         return lib_eval, chosen_books[chosen_books != self.null_book]
 
     def _update_lib_evals(self, days_left: int):
         scans_left = (days_left - self.signup_times) * self.scan_speeds
         scans_left[scans_left < 0] = 0
-        libs_books_scores = self.scores_np[self.libraries_np] # / self.lib_sums
+        libs_books_scores = self.scores_np[self.libraries_np]
         libs_books_scores.sort(axis=1)
 
         _inds = np.arange(libs_books_scores.shape[1]-1, -1, -1)
         _inds = np.tile(_inds, libs_books_scores.shape[0]).reshape((-1, _inds.size))
 
-        # _inds = np.ones(libs_books_scores.shape).cumsum(axis=1) - 1
-
         mask = _inds < scans_left.reshape((scans_left.size, 1))
-        self.lib_evals = libs_books_scores.sum(axis=1, where=mask) / (self.signup_times)**2
+        self.lib_evals = libs_books_scores.sum(axis=1, where=mask) / self.signup_times**(0.5)
 
-        # for i in range(libs_books_scores.shape[0]):
-        #     if scans_left[i] > libs_books_scores[i].size:
-        #         row = libs_books_scores[i]
-        #     elif scans_left[i] == 0:
-        #         row = np.array([0])
-        #     else:
-        #         row = np.partition(libs_books_scores[i], -scans_left[i])[-scans_left[i]:]
-        #     self.lib_evals[i] = row.sum() / self.signup_times[i]**2
 
         self.lib_evals[self.libs_used] = 0
 
@@ -108,7 +92,7 @@ if __name__ == "__main__":
     for file in files:
         path = f"resources/{file}.txt"
         instance = Instance(path)
-        problem = GreedyProblem(instance)
+        problem = IterativeSortingProblem(instance)
         lib_order, lib_books_scanned = problem.run_greedy()
         result = problem.score_solution(lib_order, lib_books_scanned)
         print(f"File: {file}, Result: {result}")
