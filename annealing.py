@@ -4,13 +4,17 @@ from copy import deepcopy
 
 import numpy as np
 
-from baseproblems import NumpyLibraryProblem, profiletime
+from baseproblems import NumpyLibraryProblem, profiletime, Instance
 
 
 class AnnealingProblem(NumpyLibraryProblem):
-    def __init__(self, filepath):
-        super().__init__(filepath)
-        self.lib_sums = self.scores_np[self.libraries_np].sum(axis=1).reshape((-1,))
+    def __init__(self, instance: Instance):
+        super().__init__(instance)
+        self.stopped = False
+
+    def stop(self):
+        self.stopped = True
+        print("Annealing stopped")
 
     def random_lib_order(self):
         lib_order = np.random.permutation(self.NUM_LIBS)
@@ -23,8 +27,8 @@ class AnnealingProblem(NumpyLibraryProblem):
         return res_lib_order
 
     def _annealing(self, num_iters, start_temp=10, start_lib_order: list = None):
-        leniency = 0.001
-        power = np.log(np.log(100)/leniency) / np.log(num_iters)
+        # leniency = 0.001
+        # power = np.log(np.log(100)/leniency) / np.log(num_iters)
         alpha = 0.995
 
         curr_lib_order = start_lib_order
@@ -40,10 +44,11 @@ class AnnealingProblem(NumpyLibraryProblem):
 
         curr_eval = self.evaluate_lib_order_fast(curr_lib_order)
         history = [curr_eval]
-        temps = [start_temp]
         curr_temp = start_temp
         probs = []
         for k in range(num_iters):
+            if self.stopped:
+                break
             next_lib_order = self.random_change(curr_lib_order)
             next_eval = self.evaluate_lib_order_fast(next_lib_order)
 
@@ -57,7 +62,6 @@ class AnnealingProblem(NumpyLibraryProblem):
             # curr_temp = start_temp / (k+1)**power
             curr_temp = start_temp * alpha**k
             history.append(curr_eval)
-            temps.append(curr_temp)
             probs.append(prob)
 
         return curr_lib_order, history, probs
@@ -68,7 +72,7 @@ class AnnealingProblem(NumpyLibraryProblem):
         start_temp = np.mean(short_hist)
         return self._annealing(num_iters, start_temp, start_lib_order)
 
-
+    ### DEPRECATED
     def evaluate_lib_order(self, lib_order):
         curr_lib_sums = self.lib_sums[lib_order]
         # book_lib_props = self.scores_np.reshape((-1,1)).repeat(curr_lib_sums.size, axis=1) / curr_lib_sums
@@ -160,12 +164,18 @@ class AnnealingProblem(NumpyLibraryProblem):
 
         return res_score
 
+
 class BookFillingProblem(NumpyLibraryProblem):
-    def __init__(self, filepath: str):
-        super().__init__(filepath)
+    def __init__(self, instance: Instance):
+        super().__init__(instance)
+        self.stopped = False
+
+    def stop(self):
+        self.stopped = True
 
     def run_book_filling(self, lib_order):
-        pass
+        assignments = {lib: [] for lib in lib_order}
+        return assignments
 
 
 if __name__ == "__main__":
@@ -177,8 +187,8 @@ if __name__ == "__main__":
     ]
     for file in files:
         path = f"resources/{file}.txt"
-
-        anneal_problem = AnnealingProblem(path)
+        instance = Instance(path)
+        anneal_problem = AnnealingProblem(instance)
         lib_order, history, probs = anneal_problem.run_annealing(num_iters=10)
 
         eval = anneal_problem.evaluate_lib_order2(lib_order)

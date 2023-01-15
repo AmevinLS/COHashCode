@@ -6,7 +6,7 @@ from copy import deepcopy
 
 import numpy as np
 
-from reader import read_file
+from reader import read_file, read_console
 
 
 def profiletime(func):
@@ -26,12 +26,24 @@ def profiletime(func):
     return wrapper
 
 
+class Instance:
+    def __init__(self, filepath: str|None = None):
+        if filepath is None:
+            self.params = read_console()
+        else:
+            self.params = read_file(filepath)
+
+    def get_parameters(self):
+        return self.params
+
+
+
 class BadSolutionException(Exception):
     pass
 
 class LibraryProblem:
-    def __init__(self, filepath: str):
-        n, t, m, libs, s, d = read_file(filepath)
+    def __init__(self, instance: Instance = None):
+        n, t, m, libs, s, d = instance.get_parameters()
         _, self.signup_times = n, t
         self.scan_speeds, self.libraries, self.scores = m, libs, s
         self.NUM_DAYS = d
@@ -64,8 +76,8 @@ class LibraryProblem:
 
 
 class NumpyLibraryProblem(LibraryProblem):
-    def __init__(self, filepath: str):
-        super().__init__(filepath)
+    def __init__(self, instance: Instance):
+        super().__init__(instance)
         self.orig_scores = deepcopy(self.scores)
 
         self.null_book = len(self.scores)
